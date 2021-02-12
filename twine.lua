@@ -1,10 +1,15 @@
 -- twine
+-- to form by twisting,
+-- intertwining,
+-- or interlacing...
+--
 -- by: @cfd90
 --
+-- ENC1 volume
 -- KEY2 randomize pads 1
 -- KEY3 randomize pads 2
--- ENC2 seek offset 1
--- ENC3 seek offset 2
+-- ENC2 seek 1
+-- ENC3 seek 2
 
 engine.name = "Glut"
 
@@ -122,21 +127,9 @@ function randomize(n)
       local size = math.random(0, 500)
       local density = math.random(1, 20)
       local spread = math.random(0, 100)
-      
       local pitches = {-12, -5, 0, 12, 7,}
       local pitch_idx = math.random(1, #pitches)
       local pitch = pitches[pitch_idx]
-      
-      local jitter2 = math.random(0, 500)
-      local size2 = math.random(0, 500)
-      local density2 = math.random(1, 20)
-      local spread2 = math.random(0, 100)
-      
-      local pitches2 = {-12, -5, 0, 12, 7,}
-      local pitch_idx2 = math.random(1, #pitches2)
-      local pitch2 = pitches2[pitch_idx2]
-      
-      local t = {}
       
       if n == 1 then
         matrix[x][y].jitter = jitter
@@ -146,11 +139,11 @@ function randomize(n)
         matrix[x][y].pitch = pitch
         sk1 = 0
       elseif n == 2 then
-        matrix[x][y].jitter2 = jitter2
-        matrix[x][y].size2 = size2
-        matrix[x][y].density2 = density2
-        matrix[x][y].spread2 = spread2
-        matrix[x][y].pitch2 = pitch2
+        matrix[x][y].jitter2 = jitter
+        matrix[x][y].size2 = size
+        matrix[x][y].density2 = density
+        matrix[x][y].spread2 = spread
+        matrix[x][y].pitch2 = pitch
         sk2 = 0
       end
     end
@@ -177,8 +170,6 @@ function grid_key(x, y, z)
   if z == 1 then
     selx = x
     sely = y
-    
-    local m = matrix[selx][sely]
     
     local pct = (((y-1)*g.rows) + x) / (g.rows * g.cols)
     engine.seek(1, pct)
@@ -209,48 +200,63 @@ function redraw()
   screen.text("jitter: ")
   screen.level(5)
   screen.text(m.jitter)
+  screen.level(1)
   screen.text(" / ")
+  screen.level(5)
   screen.text(m.jitter2)
   screen.move(0, 20)
   screen.level(15)
   screen.text("size: ")
   screen.level(5)
   screen.text(m.size)
+  screen.level(1)
   screen.text(" / ")
+  screen.level(5)
   screen.text(m.size2)
   screen.move(0, 30)
   screen.level(15)
   screen.text("density: ")
   screen.level(5)
   screen.text(m.density)
+  screen.level(1)
   screen.text(" / ")
+  screen.level(5)
   screen.text(m.density2)
   screen.move(0, 40)
   screen.level(15)
   screen.text("spread: ")
   screen.level(5)
   screen.text(m.spread)
+  screen.level(1)
   screen.text(" / ")
+  screen.level(5)
   screen.text(m.spread2)
   screen.move(0, 50)
   screen.level(15)
   screen.text("pitch: ")
   screen.level(5)
   screen.text(m.pitch)
+  screen.level(1)
   screen.text(" / ")
+  screen.level(5)
   screen.text(m.pitch2)
   screen.move(0, 60)
   screen.level(15)
   screen.text("seek offset: ")
   screen.level(5)
   screen.text(sk1)
+  screen.level(1)
   screen.text(" / ")
+  screen.level(5)
   screen.text(sk2)
   screen.update()
 end
 
 function enc(n, d)
-  if n == 2 then
+  if n == 1 then
+    params:delta("volume", d)
+    params:delta("2volume", d)
+  elseif n == 2 then
     if d > 0 then
       sk1 = sk1 + 0.01
     elseif d < 0 then
