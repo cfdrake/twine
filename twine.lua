@@ -13,10 +13,6 @@
 
 engine.name = "Glut"
 
-local g
-local x = 1
-local y = 1
-
 local function setup_params()
   params:add_separator("samples")
   
@@ -97,17 +93,6 @@ local function setup_params()
   params:bang()
 end
 
-local function grid_redraw()
-  g:all(0)
-  g:led(x, y, 15)
-  g:refresh()
-end
-
-local function setup_grid()
-  g = grid.connect()
-  g.key = grid_key
-end
-
 local function random_float(l, h)
     return l + math.random()  * (h - l);
 end
@@ -142,27 +127,33 @@ end
 
 function init()
   setup_params()
-  setup_grid()
   setup_engine()
-  grid_redraw()
 end
 
-function grid_key(_x, _y, z)
+function enc(n, d)
+  if n == 1 then
+    params:delta("1volume", d)
+    params:delta("2volume", d)
+  elseif n == 2 then
+    params:delta("1seek", d)
+  elseif n == 3 then
+    params:delta("2seek", d)
+  end
+  
+  redraw()
+end
+
+function key(n, z)
   if z == 0 then
     return
   end
   
-  x = _x
-  y = _y
-
-  local grid_size = g.rows * g.cols
-  local this_idx = ((_y - 1) * g.rows) + _x
-  local pct = this_idx / grid_size
+  if n == 2 then
+    randomize(1)
+  elseif n == 3 then
+    randomize(2)
+  end
   
-  params:set("1seek", pct * 100)
-  params:set("2seek", pct * 100)
-  
-  grid_redraw()
   redraw()
 end
 
@@ -223,31 +214,4 @@ function redraw()
   screen.level(5)
   screen.text(params:string("2seek"))
   screen.update()
-end
-
-function enc(n, d)
-  if n == 1 then
-    params:delta("1volume", d)
-    params:delta("2volume", d)
-  elseif n == 2 then
-    params:delta("1seek", d)
-  elseif n == 3 then
-    params:delta("2seek", d)
-  end
-  
-  redraw()
-end
-
-function key(n, z)
-  if z == 0 then
-    return
-  end
-  
-  if n == 2 then
-    randomize(1)
-  elseif n == 3 then
-    randomize(2)
-  end
-  
-  redraw()
 end
