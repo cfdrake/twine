@@ -18,17 +18,6 @@ local x = 1
 local y = 1
 
 local function setup_params()
-  params:add_separator("reverb")
-  
-  params:add_taper("reverb_mix", "* mix", 0, 100, 50, 0, "%")
-  params:set_action("reverb_mix", function(value) engine.reverb_mix(value / 100) end)
-
-  params:add_taper("reverb_room", "* room", 0, 100, 50, 0, "%")
-  params:set_action("reverb_room", function(value) engine.reverb_room(value / 100) end)
-
-  params:add_taper("reverb_damp", "* damp", 0, 100, 50, 0, "%")
-  params:set_action("reverb_damp", function(value) engine.reverb_damp(value / 100) end)
-  
   params:add_separator("samples")
   
   for i=1,2 do
@@ -73,6 +62,38 @@ local function setup_params()
     params:hide(i .. "seek")
   end
 
+  params:add_separator("reverb")
+  
+  params:add_taper("reverb_mix", "* mix", 0, 100, 50, 0, "%")
+  params:set_action("reverb_mix", function(value) engine.reverb_mix(value / 100) end)
+
+  params:add_taper("reverb_room", "* room", 0, 100, 50, 0, "%")
+  params:set_action("reverb_room", function(value) engine.reverb_room(value / 100) end)
+
+  params:add_taper("reverb_damp", "* damp", 0, 100, 50, 0, "%")
+  params:set_action("reverb_damp", function(value) engine.reverb_damp(value / 100) end)
+  
+  params:add_separator("random")
+  params:add_group("ranges", 13)
+  
+  params:add_taper("min_jitter", "jitter (min)", 0, 500, 0, 5, "ms")
+  params:add_taper("max_jitter", "jitter (max)", 0, 500, 500, 5, "ms")
+  
+  params:add_taper("min_size", "size (min)", 1, 500, 1, 5, "ms")
+  params:add_taper("max_size", "size (max)", 1, 500, 500, 5, "ms")
+  
+  params:add_taper("min_density", "density (min)", 0, 512, 0, 6, "hz")
+  params:add_taper("max_density", "density (max)", 0, 512, 40, 6, "hz")
+  
+  params:add_taper("min_spread", "spread (min)", 0, 100, 0, 0, "%")
+  params:add_taper("max_spread", "spread (max)", 0, 100, 100, 0, "%")
+  
+  params:add_taper("pitch_1", "pitch (1)", -48, 48, -12, 0, "st")
+  params:add_taper("pitch_2", "pitch (2)", -48, 48, -5, 0, "st")
+  params:add_taper("pitch_3", "pitch (3)", -48, 48, 0, 0, "st")
+  params:add_taper("pitch_4", "pitch (4)", -48, 48, 7, 0, "st")
+  params:add_taper("pitch_5", "pitch (5)", -48, 48, 12, 0, "st")
+
   params:bang()
 end
 
@@ -87,12 +108,17 @@ local function setup_grid()
   g.key = grid_key
 end
 
+local function random_float(l, h)
+    return l + math.random()  * (h - l);
+end
+
 local function randomize(n)
-  local jitter = math.random(0, 500)
-  local size = math.random(0, 500)
-  local density = math.random(1, 20)
-  local spread = math.random(0, 100)
-  local pitches = {-12, -5, 0, 12, 7,}
+  local jitter = random_float(params:get("min_jitter"), params:get("max_jitter"))
+  local size = random_float(params:get("min_size"), params:get("max_size"))
+  local density = random_float(params:get("min_density"), params:get("max_density"))
+  local spread = random_float(params:get("min_spread"), params:get("max_spread"))
+  local pitches = {params:get("pitch_1"), params:get("pitch_2"), params:get("pitch_3"),
+                   params:get("pitch_4"), params:get("pitch_5")}
   local pitch_idx = math.random(1, #pitches)
   local pitch = pitches[pitch_idx]
   
@@ -112,14 +138,6 @@ local function setup_engine()
 
   randomize(1)
   randomize(2)
-end
-
-local function round(val, decimal)
-  if (decimal) then
-    return math.floor( (val * 10^decimal) + 0.5) / (10^decimal)
-  else
-    return math.floor(val+0.5)
-  end
 end
 
 function init()
@@ -154,56 +172,56 @@ function redraw()
   screen.level(15)
   screen.text("jitter: ")
   screen.level(5)
-  screen.text(params:get("1jitter"))
+  screen.text(params:string("1jitter"))
   screen.level(1)
   screen.text(" / ")
   screen.level(5)
-  screen.text(params:get("2jitter"))
+  screen.text(params:string("2jitter"))
   screen.move(0, 20)
   screen.level(15)
   screen.text("size: ")
   screen.level(5)
-  screen.text(params:get("1size"))
+  screen.text(params:string("1size"))
   screen.level(1)
   screen.text(" / ")
   screen.level(5)
-  screen.text(params:get("2size"))
+  screen.text(params:string("2size"))
   screen.move(0, 30)
   screen.level(15)
   screen.text("density: ")
   screen.level(5)
-  screen.text(params:get("1density"))
+  screen.text(params:string("1density"))
   screen.level(1)
   screen.text(" / ")
   screen.level(5)
-  screen.text(params:get("2density"))
+  screen.text(params:string("2density"))
   screen.move(0, 40)
   screen.level(15)
   screen.text("spread: ")
   screen.level(5)
-  screen.text(params:get("1spread"))
+  screen.text(params:string("1spread"))
   screen.level(1)
   screen.text(" / ")
   screen.level(5)
-  screen.text(params:get("2spread"))
+  screen.text(params:string("2spread"))
   screen.move(0, 50)
   screen.level(15)
   screen.text("pitch: ")
   screen.level(5)
-  screen.text(params:get("1pitch"))
+  screen.text(params:string("1pitch"))
   screen.level(1)
   screen.text(" / ")
   screen.level(5)
-  screen.text(params:get("2pitch"))
+  screen.text(params:string("2pitch"))
   screen.move(0, 60)
   screen.level(15)
   screen.text("seek: ")
   screen.level(5)
-  screen.text(round(params:get("1seek"), 2))
+  screen.text(params:string("1seek"))
   screen.level(1)
   screen.text(" / ")
   screen.level(5)
-  screen.text(round(params:get("2seek"), 2))
+  screen.text(params:string("2seek"))
   screen.update()
 end
 
