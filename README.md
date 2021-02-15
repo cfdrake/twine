@@ -2,4 +2,4 @@
 
 "to form by twisting, intertwining, or interlacing..."
 
-A granular randomizer for Monome Norns.
+A random granulator for Monome Norns.
