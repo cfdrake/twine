@@ -47,7 +47,6 @@ local function setup_params()
     params:add_taper(i .. "seek", i .. " seek", 0, 100, 0, 0, "%")
     params:set_action(i .. "seek", function(value) engine.seek(i, value / 100) end)
     
-    params:hide(i .. "volume")
     params:hide(i .. "speed")
     params:hide(i .. "jitter")
     params:hide(i .. "size")
@@ -55,7 +54,6 @@ local function setup_params()
     params:hide(i .. "pitch")
     params:hide(i .. "spread")
     params:hide(i .. "fade")
-    params:hide(i .. "seek")
   end
 
   params:add_separator("reverb")
@@ -69,8 +67,7 @@ local function setup_params()
   params:add_taper("reverb_damp", "* damp", 0, 100, 50, 0, "%")
   params:set_action("reverb_damp", function(value) engine.reverb_damp(value / 100) end)
   
-  params:add_separator("random")
-  params:add_group("ranges", 13)
+  params:add_separator("randomizer")
   
   params:add_taper("min_jitter", "jitter (min)", 0, 500, 0, 5, "ms")
   params:add_taper("max_jitter", "jitter (max)", 0, 500, 500, 5, "ms")
