@@ -13,6 +13,18 @@
 
 engine.name = "Glut"
 
+local ui_metro
+
+local function setup_ui_metro()
+  ui_metro = metro.init()
+  ui_metro.time = 1/15
+  ui_metro.event = function()
+    redraw()
+  end
+  
+  ui_metro:start()
+end
+
 local function setup_params()
   params:add_separator("samples")
   
@@ -123,6 +135,7 @@ local function setup_engine()
 end
 
 function init()
+  setup_ui_metro()
   setup_params()
   setup_engine()
 end
@@ -136,8 +149,6 @@ function enc(n, d)
   elseif n == 3 then
     params:delta("2seek", d)
   end
-  
-  redraw()
 end
 
 function key(n, z)
@@ -150,8 +161,6 @@ function key(n, z)
   elseif n == 3 then
     randomize(2)
   end
-  
-  redraw()
 end
 
 function redraw()
