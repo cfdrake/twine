@@ -44,7 +44,7 @@ local function setup_params()
     params:add_taper(i .. "fade", i .. " att / dec", 1, 9000, 1000, 3, "ms")
     params:set_action(i .. "fade", function(value) engine.envscale(i, value / 1000) end)
     
-    params:add_taper(i .. "seek", i .. " seek", 0, 100, 0, 0, "%")
+    params:add_control(i .. "seek", i .. " seek", controlspec.new(0, 100, "lin", 0.1, 0, "%", 0.1/100))
     params:set_action(i .. "seek", function(value) engine.seek(i, value / 100) end)
     
     params:hide(i .. "speed")
